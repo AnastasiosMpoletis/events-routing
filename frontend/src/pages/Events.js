@@ -3,7 +3,9 @@ import { useLoaderData } from 'react-router-dom';
 import EventsList from '../components/EventsList';
 
 function EventsPage() {
-    const events = useLoaderData();
+    // useLoaderData will automatically give us the data that is part of the response
+    const data = useLoaderData();
+    const events = data.events;
 
     return (
         <EventsList events={events} />
@@ -23,7 +25,7 @@ export async function loader() {
     if (!response.ok) {
         //TODO 
     } else {
-        const resData = await response.json();
-        return resData.events;
+        // we can return anything from a loader. Even the response.
+        return response;
     }
 }
