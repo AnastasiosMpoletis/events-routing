@@ -29,10 +29,14 @@ export async function loader() {
 
     if (!response.ok) {
         // return { isError: true, message: 'Could not fetch events.' };
+
         // if there no errorElement for Events, this error can bubble up until it reaches an errorElement (e.g. in Root)
-        throw { message: 'Could not fetch events.' };
+        throw new Response(
+            JSON.stringify({ message: 'Could not fetch events.' }),
+            { status: 500 }
+        );
     } else {
-        // we can return anything from a loader. Even the response.
+        // we can return anything from a loader. Even the response
         return response;
     }
 }
