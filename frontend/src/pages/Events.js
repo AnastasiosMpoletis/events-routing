@@ -5,6 +5,11 @@ import EventsList from '../components/EventsList';
 function EventsPage() {
     // useLoaderData will automatically give us the data that is part of the response
     const data = useLoaderData();
+
+    // if (data.isError) {
+    //     return <p>{data.message}</p>
+    // }
+
     const events = data.events;
 
     return (
@@ -23,7 +28,9 @@ export async function loader() {
     const response = await fetch('http://localhost:8080/events');
 
     if (!response.ok) {
-        //TODO 
+        // return { isError: true, message: 'Could not fetch events.' };
+        // if there no errorElement for Events, this error can bubble up until it reaches an errorElement (e.g. in Root)
+        throw { message: 'Could not fetch events.' };
     } else {
         // we can return anything from a loader. Even the response.
         return response;
