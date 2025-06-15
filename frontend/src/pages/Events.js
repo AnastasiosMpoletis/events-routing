@@ -31,10 +31,10 @@ export async function loader() {
         // return { isError: true, message: 'Could not fetch events.' };
 
         // if there no errorElement for Events, this error can bubble up until it reaches an errorElement (e.g. in Root)
-        // throw new Response(
-        //     JSON.stringify({ message: 'Could not fetch events.' }),
-        //     { status: 500 }
-        // );
+        throw new Response(
+            JSON.stringify({ message: 'Could not fetch events.' }),
+            { status: 500 }
+        );
 
         /**
          * With json(), we can directly access Response data, without having to serialize it to JSON to get e.g. the message.
@@ -42,10 +42,10 @@ export async function loader() {
          * IMPORTANT: json() is available for react-router-dom version = 6. This project's rect-router-dom version (10.9.2) doesn't support it. 
          * We should use: throw new Response(...) as above.
          */
-        return json(
-            { message: 'Could not fetch events.' },
-            { status: 500 }
-        );
+        // return json(
+        //     { message: 'Could not fetch events.' },
+        //     { status: 500 }
+        // );
     } else {
         // we can return anything from a loader. Even the response
         return response;
