@@ -11,3 +11,19 @@ function EventsPage() {
 }
 
 export default EventsPage;
+
+/**
+ * It is a good practice to place this events loader in Events page.
+ * 
+ * @returns events from backend
+ */
+export async function loader() {
+    const response = await fetch('http://localhost:8080/events');
+
+    if (!response.ok) {
+        //TODO 
+    } else {
+        const resData = await response.json();
+        return resData.events;
+    }
+}
