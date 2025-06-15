@@ -49,11 +49,16 @@ const router = createBrowserRouter([
           },
           {
             path: ':eventId',
-            element: <EventDetailPage />,
+            // we need this id so that the children can point to the parent's attributes
+            id: 'event-detail',
+            // we do not need an element here. We just want to share the loader or any other functionality
             loader: eventDetailLoader,
+            children: [
+              { index: true, element: <EventDetailPage />, },
+              { path: 'edit', element: <EditEventPage /> },
+            ]
           },
           { path: 'new', element: <NewEventPage /> },
-          { path: ':eventId/edit', element: <EditEventPage /> },
         ]
       },
     ]

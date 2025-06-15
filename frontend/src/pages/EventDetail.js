@@ -1,8 +1,20 @@
-import { useLoaderData } from "react-router-dom";
+import { 
+    // useLoaderData,
+    useRouteLoaderData
+ } from "react-router-dom";
 import EventItem from '../components/EventItem.js'
 
 function EventDetailPage() {
-    const data = useLoaderData();
+    /**
+     * useLoaderData searches for the closest available loader data and the highest level at which it looks for data 
+     * is the route definition of the route for which EventDetailPage component was loaded. In our case in path: 'edit' {@see App}.
+     * But we want to load data from eventsLoader in path: 'events'.
+     * We also need an id for that.     
+     */
+    // const data = useLoaderData();
+
+    const data = useRouteLoaderData('event-detail');
+    
 
     return (
         <EventItem event={data.event} />
