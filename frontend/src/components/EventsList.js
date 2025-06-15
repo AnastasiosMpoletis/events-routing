@@ -1,6 +1,9 @@
+// import { useLoaderData } from 'react-router-dom';
 import classes from './EventsList.module.css';
 
 function EventsList({ events }) {
+  // const events = useLoaderData(); // we can use it in same or lower level routes (e.g. Events -> EventsList). Not higher (e.g. Events -> Root)
+
   return (
     <div className={classes.events}>
       <h1>All Events</h1>
