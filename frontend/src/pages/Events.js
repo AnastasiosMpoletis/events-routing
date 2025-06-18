@@ -1,33 +1,37 @@
 import {
-    useLoaderData,
+    useLoaderData, Await
     // json 
 } from 'react-router-dom';
+import { Suspense } from 'react';
 
 import EventsList from '../components/EventsList';
 
 function EventsPage() {
     // useLoaderData will automatically give us the data that is part of the response
-    const data = useLoaderData();
+    const { events } = useLoaderData();
 
-    // if (data.isError) {
-    //     return <p>{data.message}</p>
-    // }
-
-    const events = data.events;
-
+    /**
+     * Await component will wait for the data to fetch. Child function will be executed once the data is fetched.
+     * Suspence component can be used to show a fallback whilst we wait for data to arrive.
+     */
     return (
-        <EventsList events={events} />
+        <Suspense fallback={<p style={{ textAlign: 'center' }}>Loading...</p>}>
+            <Await resolve={events}>
+                {(loadedEvents) => <EventsList events={loadedEvents} />}
+            </Await>
+        </Suspense>
     );
 }
 
 export default EventsPage;
 
 /**
- * It is a good practice to place this events loader in Events page.
+ * We use a separate function in order to load something in the page until data is fetched. 
+ * We also use Suspence and Await in our component return function.
  * 
  * @returns events from backend
  */
-export async function loader() {
+async function loadEvents() {
     const response = await fetch('http://localhost:8080/events');
 
     if (!response.ok) {
@@ -51,6 +55,20 @@ export async function loader() {
         // );
     } else {
         // we can return anything from a loader. Even the response
-        return response;
+        // return response;
+
+        const responseData = await response.json();
+        return responseData.events;
     }
+}
+
+/**
+ * It is a good practice to place this events loader in Events page.
+ * 
+ * @returns events from backend
+ */
+export function loader() {
+    return {
+        events: loadEvents() // we also execute loadEvents
+    };
 }
