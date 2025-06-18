@@ -1,8 +1,10 @@
 import {
     // useLoaderData,
-    useRouteLoaderData, redirect
+    useRouteLoaderData, redirect, Await
 } from "react-router-dom";
+import { Suspense } from "react";
 import EventItem from '../components/EventItem.js'
+import EventsList from '../components/EventsList.js'
 
 function EventDetailPage() {
     /**
@@ -13,25 +15,27 @@ function EventDetailPage() {
      */
     // const data = useLoaderData();
 
-    const data = useRouteLoaderData('event-detail');
-
+    const { event, events } = useRouteLoaderData('event-detail');
 
     return (
-        <EventItem event={data.event} />
+        <>
+            <Suspense fallback={<p style={{ textAlign: 'center' }} > Loading event...</p >}>
+                <Await resolve={event}>
+                    {loadedEvent => <EventItem event={loadedEvent} />}
+                </Await>
+            </Suspense>
+            <Suspense fallback={<p style={{ textAlign: 'center' }} > Loading events...</p >}>
+                <Await resolve={events}>
+                    {loadedEvents => <EventsList events={loadedEvents} />}
+                </Await>
+            </Suspense>
+        </>
     );
 }
 
 export default EventDetailPage;
 
-/**
- * React-router-dom params contain the same data as useParams.
- * Do not forget to register a new loader to createBrowserRouter.
- * 
- * @param {*} param0 
- * @returns response with event details
- */
-export async function loader({ request, params }) {
-    const eventId = params.eventId;
+async function loadEvent(eventId) {
     const response = await fetch('http://localhost:8080/events/' + eventId);
 
     if (!response.ok) {
@@ -40,7 +44,43 @@ export async function loader({ request, params }) {
             { status: 500 }
         );
     } else {
-        return response;
+        const responseData = await response.json();
+        return responseData.event;
+    }
+}
+
+/**
+ * Copied from EventsPage. Should be in a shared file.
+ * 
+ * @returns 
+ */
+async function loadEvents() {
+    const response = await fetch('http://localhost:8080/events');
+
+    if (!response.ok) {
+        throw new Response(
+            JSON.stringify({ message: 'Could not fetch events.' }),
+            { status: 500 }
+        );
+    } else {
+        const responseData = await response.json();
+        return responseData.events;
+    }
+}
+
+/**
+ * In this loader, we have two functions that return data. We can wrap them in an object like this.
+ * Notice  the await keyword for loadEvent. 
+ * This way, the page waits to fetch the event before it gets rendered (this is fast).
+ * But for events, we do not wait for them and we display a loading message while loading (this is not fast).
+ * 
+ * @param {*} param0 
+ * @returns response with event details
+ */
+export async function loader({ request, params }) {
+    return {
+        event: await loadEvent(params.eventId),
+        events: loadEvents(),
     }
 }
 
